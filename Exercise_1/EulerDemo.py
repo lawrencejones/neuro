@@ -29,21 +29,20 @@ y_large = np.zeros(len(T_large))
 y = np.exp(T)
 
 # Approximated solution with small integration Step
-y_small[0] = np.exp(Tmin)  # Initial value
+y_small[0] = np.exp(Tmin)
 for t in xrange(1, len(T_small)):
-  y_small[t] = y_small[t-1] + dt_small*y_small[t-1]
+    y_small[t] = y_small[t-1] + dt_small*y_small[t-1]
 
 # Approximated solution with large integration Step
-y_large[0] = np.exp(Tmin)  # Initial value
+y_large[0] = np.exp(Tmin)
 for t in xrange(1, len(T_large)):
-  y_large[t] = y_large[t-1] + dt_large*y_large[t-1]
+    y_large[t] = y_large[t-1] + dt_large*y_large[t-1]
 
 # Plot the results
-plt.plot(T      , y      , 'b', label='Exact solution of y = $e^t$')
-plt.plot(T_small, y_small, 'g', label='Euler method $\delta$ t = ' + str(dt_small))
-plt.plot(T_large, y_large, 'r', label='Euler method $\delta$ t = ' + str(dt_large))
+plt.plot(T, y, 'b',             label='Exact solution of y = $e^t$')
+plt.plot(T_small, y_small, 'g', label='Euler method $\delta$ t = 0.1')
+plt.plot(T_large, y_large, 'r', label='Euler method $\delta$ t = 0.5')
 plt.xlabel('t')
 plt.ylabel('y')
 plt.legend(loc=0)
 plt.show()
-
