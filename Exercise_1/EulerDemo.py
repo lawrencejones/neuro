@@ -11,6 +11,7 @@ simulation using the Euler method, for two different step sizes.
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 dt = 0.001      # Step size for exact solution
 dt_small = 0.1  # Small integration step
 dt_large = 0.5  # Large integration step
