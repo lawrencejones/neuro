@@ -14,52 +14,64 @@ http://www.izhikevich.org/publications/spikes.htm
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Create time points
-Tmin = 0
-Tmax = 200   # Simulation time
-dt   = 0.01  # Step size
-T    = np.arange(Tmin, Tmax+dt, dt)
+
+def create_timepoints(start=0, end=200, dt=0.01):
+    return np.arange(start, end + dt, dt)
+
+
+def simulate(params):
+
+    a = params['a']
+    b = params['b']
+    c = params['c']
+    d = params['d']
+
+    v = np.zeros(len(T))
+    u = np.zeros(len(T))
+
+    v[0] = -65
+    u[0] = -1
+
+    for t in xrange(len(T) - 1):
+        # Update v and u according to Izhikevich's equations
+        v[t + 1] = v[t] + dt * (0.04 * v[t]**2 + 5 * v[t] + 140 - u[t] + I)
+        u[t + 1] = u[t] + dt * (a * (b * v[t] - u[t]))
+
+        # Reset the neuron if it has spiked
+        if v[t + 1] >= 30:
+            v[t] = 30          # Add a Dirac pulse for visualisation
+            v[t + 1] = c           # Reset to resting potential
+            u[t + 1] = u[t + 1] + d  # Update recovery variable
+
+    return u, v
 
 # Base current
 I = 10
+dt = 0.01
 
-## Parameters of Izhikevich's model (regular spiking)
-a = 0.02
-b = 0.2
-c = -65
-d = 8
+IZ_PARAMETERS = {
+    'regular': {
+        'a': 0.02,
+        'b': 0.2,
+        'c': -65,
+        'd': 8,
+    },
+    'fast': {
+        'a': 0.02,
+        'b': 0.25,
+        'c': -65,
+        'd': 2,
+    },
+    'bursting': {
+        'a': 0.02,
+        'b': 0.2,
+        'c': -50,
+        'd': 2,
+    },
+}
 
-## Parameters of Izhikevich's model (fast spiking)
-# a = 0.02
-# b = 0.25
-# c = -65
-# d = 2
-
-## Parameters of Izhikevich's model (bursting)
-# a = 0.02
-# b = 0.2
-# c = -50
-# d = 2
-
-v = np.zeros(len(T))
-u = np.zeros(len(T))
-
-## Initial values
-v[0] = -65
-u[0] = -1
-
-## SIMULATE
-for t in xrange(len(T)-1):
-  # Update v and u according to Izhikevich's equations
-  v[t+1] = v[t] + dt*(0.04*v[t]**2 + 5*v[t] + 140 - u[t] + I)
-  u[t+1] = u[t] + dt*(a * (b*v[t] - u[t]))
-
-  # Reset the neuron if it has spiked
-  if v[t+1] >= 30:
-    v[t]   = 30          # Add a Dirac pulse for visualisation
-    v[t+1] = c           # Reset to resting potential
-    u[t+1] = u[t+1] + d  # Update recovery variable
-
+T = create_timepoints(dt=dt)
+u, v = simulate(IZ_PARAMETERS['regular'])
 
 ## Plot the membrane potential
 plt.subplot(211)
