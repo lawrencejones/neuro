@@ -2,7 +2,7 @@
 Computational Neurodynamics
 Exercise 1
 
-Simulates Izhikevich's neuron model using the Euler method.
+Simulates Izhikevich's neuron model using the Runge-Kutta method.
 Parameters for regular spiking, fast spiking and bursting
 neurons extracted from:
 
@@ -62,7 +62,14 @@ class IzNeuron(object):
         U[0] = u0
 
         for i in xrange(steps - 1):
-            V[i + 1] = V[i] + dt * self.__f(V[i], U[i])
+
+            # Runge-Kutta method
+            k1 = self.__f(V[i], U[i])
+            k2 = self.__f(V[i] + 0.5 * dt * k1, U[i])
+            k3 = self.__f(V[i] + 0.5 * dt * k2, U[i])
+            k4 = self.__f(V[i] + dt * k3, U[i])
+
+            V[i + 1] = V[i] + (dt / 6) * (k1 + 2*k2 + 2*k3 + k4)
             U[i + 1] = U[i] + dt * (self.a * (self.b * V[i] - U[i]))
 
             if self.__above_threshold(V[i + 1]):
