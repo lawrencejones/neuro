@@ -62,7 +62,7 @@ class IzNeuron(object):
         U[0] = u0
 
         for i in xrange(steps - 1):
-            V[i + 1] = V[i] + dt * (0.04 * V[i]**2 + 5 * V[i] + 140 - U[i] + IzNeuron.BASE_CURRENT)
+            V[i + 1] = V[i] + dt * self.__f(V[i], U[i])
             U[i + 1] = U[i] + dt * (self.a * (self.b * V[i] - U[i]))
 
             if self.__above_threshold(V[i + 1]):
@@ -74,6 +74,12 @@ class IzNeuron(object):
 
     def __above_threshold(self, value):
         return value >= IzNeuron.THRESHOLD
+
+    def __f(self, v, u):
+        """
+        Computes dv/dt for the values of v and u
+        """
+        return (0.04 * v**2) + (5 * v) + 140 - u + IzNeuron.BASE_CURRENT
 
 
 if __name__ == '__main__':
