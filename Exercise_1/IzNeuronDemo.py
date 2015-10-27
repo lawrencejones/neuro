@@ -50,7 +50,7 @@ class IzNeuron(object):
         self.c = params['c']
         self.d = params['d']
 
-    def simulate(self, v0=-65, u0=-1, duration=200, dt=0.01, I=10):
+    def simulate(self, v0=-65, u0=-1, duration=200, dt=0.01):
 
         steps = int(duration / dt)
 
