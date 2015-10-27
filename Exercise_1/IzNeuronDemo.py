@@ -11,43 +11,10 @@ http://www.izhikevich.org/publications/spikes.htm
 (C) Murray Shanahan et al, 2015
 """
 
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-def create_timepoints(start=0, end=200, dt=0.01):
-    return np.arange(start, end + dt, dt)
-
-
-def simulate(params):
-
-    a = params['a']
-    b = params['b']
-    c = params['c']
-    d = params['d']
-
-    v = np.zeros(len(T))
-    u = np.zeros(len(T))
-
-    v[0] = -65
-    u[0] = -1
-
-    for t in xrange(len(T) - 1):
-        # Update v and u according to Izhikevich's equations
-        v[t + 1] = v[t] + dt * (0.04 * v[t]**2 + 5 * v[t] + 140 - u[t] + I)
-        u[t + 1] = u[t] + dt * (a * (b * v[t] - u[t]))
-
-        # Reset the neuron if it has spiked
-        if v[t + 1] >= 30:
-            v[t] = 30          # Add a Dirac pulse for visualisation
-            v[t + 1] = c           # Reset to resting potential
-            u[t + 1] = u[t + 1] + d  # Update recovery variable
-
-    return u, v
-
-# Base current
-I = 10
-dt = 0.01
 
 IZ_PARAMETERS = {
     'regular': {
@@ -62,7 +29,7 @@ IZ_PARAMETERS = {
         'c': -65,
         'd': 2,
     },
-    'bursting': {
+    'burst': {
         'a': 0.02,
         'b': 0.2,
         'c': -50,
@@ -70,20 +37,73 @@ IZ_PARAMETERS = {
     },
 }
 
-T = create_timepoints(dt=dt)
-u, v = simulate(IZ_PARAMETERS['regular'])
 
-## Plot the membrane potential
-plt.subplot(211)
-plt.plot(T, v)
-plt.xlabel('Time (ms)')
-plt.ylabel('Membrane potential v (mV)')
-plt.title('Izhikevich Neuron')
+class IzNeuron(object):
 
-# Plot the reset variable
-plt.subplot(212)
-plt.plot(T, u)
-plt.xlabel('Time (ms)')
-plt.ylabel('Reset variable u')
-plt.show()
+    BASE_CURRENT = 10
+    THRESHOLD = 30
+    DIRAC_SPIKE = 30
 
+    def __init__(self, params):
+        self.a = params['a']
+        self.b = params['b']
+        self.c = params['c']
+        self.d = params['d']
+
+    def simulate(self, v0=-65, u0=-1, duration=200, dt=0.01, I=10):
+
+        steps = int(duration / dt)
+
+        T = np.arange(0, duration, dt)
+        V = np.zeros(steps)
+        U = np.zeros(steps)
+
+        V[0] = v0
+        U[0] = u0
+
+        for i in xrange(steps - 1):
+            V[i + 1] = V[i] + dt * (0.04 * V[i]**2 + 5 * V[i] + 140 - U[i] + IzNeuron.BASE_CURRENT)
+            U[i + 1] = U[i] + dt * (self.a * (self.b * V[i] - U[i]))
+
+            if self.__above_threshold(V[i + 1]):
+                V[i] = IzNeuron.DIRAC_SPIKE  # pulse for visualisation
+                V[i + 1] = self.c  # reset to resting potential
+                U[i + 1] = U[i + 1] + self.d  # update recovery variable
+
+        return T, U, V
+
+    def __above_threshold(self, value):
+        return value >= IzNeuron.THRESHOLD
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print("""
+        Desc:  Plots Izhikevich neruon models, both u and v
+        Usage: python IzNeuronDemo.py <type-of-neuron>
+        Examples...
+
+            python IzNeuronDemo.py fast
+            python IzNeuronDemo.py burst
+            python IzNeuronDemo.py regular
+
+        """)
+
+        exit(-1)
+
+    type_of_neuron = sys.argv[1]
+    T, U, V = IzNeuron(IZ_PARAMETERS[type_of_neuron]).simulate()
+
+    # Plot the membrane potential
+    plt.subplot(211)
+    plt.plot(T, V)
+    plt.xlabel('Time (ms)')
+    plt.ylabel('Membrane potential v (mV)')
+    plt.title('Izhikevich Neuron')
+
+    # Plot the reset variable
+    plt.subplot(212)
+    plt.plot(T, U)
+    plt.xlabel('Time (ms)')
+    plt.ylabel('Reset variable u')
+    plt.show()
