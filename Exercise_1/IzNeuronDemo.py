@@ -13,30 +13,7 @@ http://www.izhikevich.org/publications/spikes.htm
 
 import sys
 import matplotlib.pyplot as plt
-from iz import IzNeuron
-
-
-IZ_PARAMETERS = {
-    'regular': {
-        'a': 0.02,
-        'b': 0.2,
-        'c': -65,
-        'd': 8,
-    },
-    'fast': {
-        'a': 0.02,
-        'b': 0.25,
-        'c': -65,
-        'd': 2,
-    },
-    'burst': {
-        'a': 0.02,
-        'b': 0.2,
-        'c': -50,
-        'd': 2,
-    },
-}
-
+from iz.IzNeuron import IzNeuron, IZ_PARAMETERS
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -54,7 +31,7 @@ if __name__ == '__main__':
         exit(-1)
 
     type_of_neuron = sys.argv[1]
-    T, V, U = IzNeuron.IzNeuron(IZ_PARAMETERS[type_of_neuron], dt=0.01).simulate()
+    T, V, U = IzNeuron(IZ_PARAMETERS[type_of_neuron], dt=0.01).simulate()
 
     # Plot the membrane potential
     plt.subplot(211)
