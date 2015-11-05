@@ -4,7 +4,7 @@ import numpy as np
 class NeuronNetworkLayer(object):
 
     """
-    General model of a Neuron network layer. Can be used in a more general NeuronNetwork.
+    General model of a neuron network layer. Can be used in a more general NeuronNetwork.
     """
 
     def __init__(self, n):
@@ -19,7 +19,7 @@ class NeuronNetworkLayer(object):
         self.delay = {}
         self.factor = {}
 
-        self.firings = np.array([])
+        self.firings = np.empty((0, 2))  # empty stack of tuples
         self.V = -65 * np.ones(n)  # default resting voltage
 
     def tick(self, dt, t):

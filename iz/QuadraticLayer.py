@@ -10,6 +10,10 @@ a = 0.2
 
 class QuadraticLayer(NeuronNetworkLayer):
 
+    """
+    Implements a Integrate and Fire Quadratic neuron model.
+    """
+
     def __init__(self, n, fire_threshold=30):
         super(QuadraticLayer, self).__init__(n)
 
