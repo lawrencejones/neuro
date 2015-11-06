@@ -31,13 +31,13 @@ class NeuronNetworkLayer(object):
         no_of_steps = int(1 / dt)
 
         for step in xrange(no_of_steps):
-            self.V = self._step_membrane_potential(dt, t)
+            self._step_membrane_potential(dt, t)
 
-        fired_neurons = np.where(self.V >= self.fire_threshold)[0]
+            fired_neurons = np.where(self.V >= self.fire_threshold)[0]
+            self._reset_neurons(fired_neurons)
 
-        for neuron_index in fired_neurons:
-            self._register_neuron_fire(neuron_index, t)
-            self._reset_neuron(neuron_index)
+            for neuron_index in fired_neurons:
+                self._register_neuron_fire(neuron_index, t)
 
     def firings_after(self, cutoff):
         """
@@ -63,9 +63,9 @@ class NeuronNetworkLayer(object):
         else:
             self.firings = np.array([[t, neuron_index]])
 
-    def _reset_neuron(self, neuron_index):
+    def _reset_neurons(self, neuron_indexes):
         """
-        Method to override for resetting a neuron and tracking variables after fire
+        Method to override for resetting neurons and tracking variables after fire
         """
 
         raise NotImplementedError("Requires implementing in subclass")

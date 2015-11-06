@@ -3,9 +3,10 @@ import numpy as np
 
 from NeuronNetwork import NeuronNetwork, add_dirac_pulse
 from QuadraticLayer import QuadraticLayer
+from IzhikevichLayer import IzhikevichLayer
 from Plotters import plot_show, plot_membrane_potentials, plot_firings
 
-neuron_models = {"quadratic": QuadraticLayer}
+neuron_models = {"quadratic": QuadraticLayer, "izhikevich": IzhikevichLayer}
 
 parser = argparse.ArgumentParser(description='Runs simulation of a two layer neuron network')
 
