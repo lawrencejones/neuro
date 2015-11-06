@@ -20,8 +20,8 @@ class QuadraticLayer(NeuronNetworkLayer):
         self.A = 0.19 + (0.02 * rn.rand(n))
         self.fire_threshold = fire_threshold
 
-    def _reset_neuron(self, neuron_index):
-        self.V[neuron_index] = vr
+    def _reset_neurons(self, neuron_indexes):
+        self.V[neuron_indexes] = vr
 
     def _step_membrane_potential(self, dt, t):
-        return self.V + dt * ((self.A * (vr - self.V) * (vc - self.V) + R * self.I) / tau)
+        self.V = self.V + dt * ((self.A * (vr - self.V) * (vc - self.V) + R * self.I) / tau)
