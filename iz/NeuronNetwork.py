@@ -32,7 +32,7 @@ class NeuronNetwork(object):
 
         return net
 
-    def __init__(self, neuron_layers):
+    def __init__(self, neuron_layers, d_max=5):
         """
         Initialises the neuron network with given layers.
 
@@ -41,9 +41,8 @@ class NeuronNetwork(object):
 
         self.layers = dict(zip(range(len(neuron_layers)), neuron_layers))
 
-        self.t = 0
-        self.dt = 0.02
-        self.d_max = 0.1 / self.dt
+        self.dt = 0.2
+        self.d_max = d_max
 
     def tick(self, t):
         """
