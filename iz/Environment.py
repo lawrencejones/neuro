@@ -2,18 +2,21 @@ import numpy as np
 import numpy.random as rn
 
 
-def _within_left_sensor(dw):
-    return (np.pi / 8) <= dw < (np.pi / 2)
+def _within_left_sensor(dw, start=0.125 * np.pi, end=0.5 * np.pi):
+    return ((start <= dw < end) or (-2 * np.pi + start <= dw < -2 * np.pi + end))
 
 
-def _within_right_sensor(dw):
-    return (-np.pi / 2 < dw <= -np.pi / 8)
+def _within_right_sensor(dw, start=1.5 * np.pi, end=1.875 * np.pi):
+    return ((start < dw <= end) or (-2 * np.pi + start < dw <= -2 * np.pi + end))
 
 
-class Environment(object):
+class Environment:
+    """
+    Environment for the robot to run around. Holds a list of objects
+    the robot should either avoid or catch.
+    """
 
     def __init__(self, no_of_objects, min_size, max_size, x_max, y_max):
-
         self.x_max = x_max
         self.y_max = y_max
 
@@ -48,19 +51,21 @@ class Environment(object):
         Determines the individual sensor readings from the given co-ords to the object
         """
 
-        sensor_range = 20.0
+        sensor_range = 25.0
         dx, dy, z = self._distance_from([x, y], [ox, oy])
 
         if z < sensor_range:
-            v = np.arctan2(dx, dy)
+            v = np.arctan2(dy, dx)
+            v = v + 2 * np.pi if v < 0 else v
+
             dw = v - w  # difference in robot's heading and object
             stimulus = (sensor_range - z) / sensor_range
 
-            if (np.pi / 8) <= abs(dw) < (np.pi / 2):
-                if dw < 0:
-                    return stimulus, 0
-                else:
-                    return 0, stimulus
+            if _within_left_sensor(dw):
+                return stimulus, 0
+
+            elif _within_right_sensor(dw):
+                return 0, stimulus
 
         return 0, 0
 
