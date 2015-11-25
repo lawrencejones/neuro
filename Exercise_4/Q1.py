@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 
 from iz.ModularSmallWorldNetwork import ModularSmallWorldNetwork
@@ -6,29 +7,13 @@ from iz.NeuronNetwork import NeuronNetwork
 from iz.IzhikevichLayer import IzhikevichLayer
 
 from iz.NetworkSimulator import simulate
-from iz.Plotters import plot_connectivity_matrix
+from iz.Plotters import plot_show, plot_membrane_potentials, plot_firings
 
-"""
-The experiment requires two layers of neurons, one for excitatory neurons and another for
-inhibitory.
+if len(sys.argv) < 2:
+    print('Missing rewiring probability!')
 
-We therefore require rules to govern interaction between each layer and the layer themselves. These
-rules include conduction delay, scaling factors, connection weights and connectivity matrixes.
-
-Recall that layer.Param[n][i,j] specifies the param on the connection from neuron j in layer n to
-the neuron i in layer.
-
-layer[0] -- Excitatory
-
-layer[0].S[0] : small world network with 1000 random intracommunity connections as a seed
-layer[0].S[1] : diffuse all-to-all
-
-layer[1] -- Inhibitory
-
-layer[1].S[0] : 4 focal connections from exc->inh
-layer[1].S[1] : diffuse all-to-all
-
-"""
+duration = int(sys.argv[2]) if len(sys.argv) == 3 else 1000
+rewiring_p = float(sys.argv[1])
 
 no_of_modules = 8
 no_of_excitatory = no_of_modules * 100
@@ -46,7 +31,7 @@ net.connect_layers([excitatory_layer, excitatory_layer],
                        1, 20, (no_of_excitatory, no_of_excitatory)),
                    S=ModularSmallWorldNetwork(no_of_modules,
                                               no_of_excitatory,
-                                              no_of_ex_to_ex_edges).rewire_network(.2).CIJ)
+                                              no_of_ex_to_ex_edges).rewire_network(rewiring_p).CIJ)
 
 net.connect_layers([excitatory_layer, inhibitory_layer],
                    scaling_factor=50,
@@ -62,5 +47,12 @@ net.connect_layers([inhibitory_layer, inhibitory_layer],
                    scaling_factor=1,
                    delay=1,
                    S=-np.random.random_sample((no_of_inhibitory, no_of_inhibitory)))
+np.fill_diagonal(inhibitory_layer.S[1], 0)
 
-simulate(net, 200, bg_lam=0.1, bg_scale=15)
+membrane_potentials, net = simulate(net, duration, base_current=5, bg_lam=0.1, bg_scale=15)
+
+plot_membrane_potentials(membrane_potentials, duration, 1)
+plot_firings(net, duration, 2)
+
+plot_show()
+

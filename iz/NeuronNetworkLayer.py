@@ -19,7 +19,7 @@ class NeuronNetworkLayer(object):
         self.factor = {}
 
         self.firings = np.empty((0, 2))  # empty stack of tuples
-        self.V = -65 * np.random.random_sample(n)  # random starting voltages
+        self.V = -65 * np.ones(n)  # random starting voltages
 
     def tick(self, dt, t):
         """
