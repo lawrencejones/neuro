@@ -2,11 +2,11 @@
 Examples
 ========
 
-ModularNetwork(120, 1200, 6).rewire_network(0.2).plot() => 6 modules, random rewiring
+ModularSmallWorldNetwork(120, 1200, 6).rewire_network(0.2).plot() => 6 modules, random rewiring
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
+from Plotters import plot_connectivity_matrix
 
 
 def select_random_int(low, high, not_allowed=None):
@@ -21,7 +21,7 @@ def select_random_int(low, high, not_allowed=None):
     return r
 
 
-class ModularNetwork(object):
+class ModularSmallWorldNetwork(object):
 
     def __init__(self, n, m, C):
         """
@@ -92,9 +92,4 @@ class ModularNetwork(object):
         Uses pyplot to draw a plot of the connectivity matrix
         """
 
-        plot = plt.figure().add_subplot(1, 1, 1)
-        x, y = np.where(self.CIJ == 1)
-        plot.axis([0, self.n, 0, self.n])
-        plot.scatter(x, y, vmin=0, vmax=self.n)
-
-        plt.show()
+        plot_connectivity_matrix(self.CIJ, self.n).show()
