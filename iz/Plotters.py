@@ -10,15 +10,15 @@ def plot_show():
     plt.show()
 
 
-def plot_connectivity_matrix(CIJ, n, plot_figure=None):
+def plot_connectivity_matrix(CIJ, (max_x, max_y), plot_figure=None):
     """
     Plots a scatter matrix
     """
 
     plot = plt.figure(plot_figure).add_subplot(1, 1, 1)
     x, y = np.where(CIJ == 1)
-    plot.axis([0, n, 0, n])
-    plot.scatter(x, y, vmin=0, vmax=n)
+    plot.axis([0, max_x, 0, max_y])
+    plot.scatter(x, y)
 
     return plt
 

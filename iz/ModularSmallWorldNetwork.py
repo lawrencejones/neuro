@@ -2,7 +2,7 @@
 Examples
 ========
 
-ModularSmallWorldNetwork(120, 1200, 6).rewire_network(0.2).plot() => 6 modules, random rewiring
+ModularSmallWorldNetwork(6, 120, 1200).rewire_network(0.2).plot() => 6 modules, random rewiring
 """
 
 import numpy as np
@@ -23,13 +23,13 @@ def select_random_int(low, high, not_allowed=None):
 
 class ModularSmallWorldNetwork(object):
 
-    def __init__(self, n, m, C):
+    def __init__(self, C, n, m):
         """
         Generates a connectivity matrix for a modular network with the following properties...
 
+        C -- # communities/modules
         n -- # nodes in the network
         m -- # edges in network
-        C -- # communities/modules
 
         Each community will host n/C nodes, with m/C intra-community edges.
         """
@@ -92,4 +92,4 @@ class ModularSmallWorldNetwork(object):
         Uses pyplot to draw a plot of the connectivity matrix
         """
 
-        plot_connectivity_matrix(self.CIJ, self.n).show()
+        plot_connectivity_matrix(self.CIJ, (self.n, self.n)).show()
