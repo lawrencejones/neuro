@@ -7,9 +7,8 @@ from neuro.NeuronNetwork import NeuronNetwork
 from neuro.IzhikevichLayer import IzhikevichLayer
 
 from neuro.NetworkSimulator import simulate
-from neuro.Plotters import plot_show, \
-    plot_membrane_potentials, \
-    plot_firings, plot_module_mean_firing_rate, plot_connectivity_matrix
+import matplotlib.pyplot as plt
+from neuro.Plotters import plot_firings, plot_module_mean_firing_rate, plot_connectivity_matrix
 
 if len(sys.argv) < 2:
     print('Missing rewiring probability!')
@@ -52,8 +51,20 @@ np.fill_diagonal(inhibitory_layer.S[1], 0)
 
 membrane_potentials, net = simulate(net, duration, bg_lam=0.01, bg_scale=15)
 
+plt.figure(1).add_subplot(2, 1, 1)
+plt.title("Simulation with p=" + str(rewiring_p))
+
+plt.subplot(2, 1, 2)
+plot_firings(net.layers[0], duration)
+
+plt.subplot(2, 1, 1)
 plot_module_mean_firing_rate(net.layers[0], no_of_modules, resolution=[20, 50])
-plot_firings(net.layers[0], duration, title="p=" + str(rewiring_p))
 
-plot_show()
+plt.savefig('./simulation_with_p_' + str(rewiring_p) + '.png')
 
+plt.figure(2).add_subplot(1, 1, 1)
+plt.title("Connectivity matrix, Excitatory to Excitatory, for p=" + str(rewiring_p))
+
+plot_connectivity_matrix(net.layers[0].S[0])
+
+plt.savefig('./connectivity_matrix_with_p_' + str(rewiring_p) + '.png')
