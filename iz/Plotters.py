@@ -24,6 +24,40 @@ def plot_connectivity_matrix(CIJ, title="", plot_figure=None):
     return plt
 
 
+def plot_module_mean_firing_rate(layer, no_of_modules, resolution=None, title="", plot_figure=None):
+    """
+    Plots the mean firing
+
+    no_of_modules -- # of modules to run mean firing rate for
+    resolution -- [sample_every_n_steps, window_size_of_sample]
+    """
+
+    n_steps, window_size = resolution
+    window_buffer = window_size / 2
+    max_spike_time = np.max(layer.firings[:, 0])
+    duration = 100 * (1 + max_spike_time / 100)
+
+    sampling_ts = range(window_buffer, duration - window_buffer, n_steps)
+    firing_rates = np.zeros((len(sampling_ts), no_of_modules))
+    module_size = layer.N / no_of_modules
+
+    for i, t in enumerate(sampling_ts):
+        firings_in_window = np.where(np.logical_and(layer.firings[:, 0] > t - window_buffer,
+                                                    layer.firings[:, 0] < t + window_buffer))[0]
+        for module_index, module_base in enumerate(range(0, layer.N, module_size)):
+            firings = np.where(np.logical_and(firings_in_window >= module_base,
+                                              firings_in_window < module_base + module_size))[0]
+            firing_rates[i][module_index] = len(firings) / window_size
+
+    plt.figure(plot_figure).add_subplot(1, 1, 1)
+    plt.title(title)
+    plt.ylabel('Mean firing rate')
+    plt.xlabel('Time (ms) + 0s')
+    plt.plot(sampling_ts, firing_rates)
+
+    return plt
+
+
 def plot_membrane_potentials(population_vs, duration, plot_figure=None):
     """
     Plots the neuron membrane potentials by population

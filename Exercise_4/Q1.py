@@ -7,7 +7,9 @@ from iz.NeuronNetwork import NeuronNetwork
 from iz.IzhikevichLayer import IzhikevichLayer
 
 from iz.NetworkSimulator import simulate
-from iz.Plotters import plot_show, plot_membrane_potentials, plot_firings
+from iz.Plotters import plot_show, \
+    plot_membrane_potentials, \
+    plot_firings, plot_module_mean_firing_rate
 
 if len(sys.argv) < 2:
     print('Missing rewiring probability!')
@@ -49,9 +51,10 @@ net.connect_layers([inhibitory_layer, inhibitory_layer],
                    S=-np.random.random_sample((no_of_inhibitory, no_of_inhibitory)))
 np.fill_diagonal(inhibitory_layer.S[1], 0)
 
-membrane_potentials, net = simulate(net, duration, base_current=5, bg_lam=0.1, bg_scale=15)
+membrane_potentials, net = simulate(net, duration, base_current=3, bg_lam=0.1, bg_scale=15)
 
-plot_membrane_potentials(membrane_potentials, duration, 1)
+# plot_module_mean_firing_rate(net.layers[0], no_of_modules, resolution=[20, 50])
+# plot_membrane_potentials(membrane_potentials, duration, 1)
 plot_firings(net, duration, 2)
 
 plot_show()
