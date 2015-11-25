@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def plot_show():
@@ -7,6 +8,19 @@ def plot_show():
     """
 
     plt.show()
+
+
+def plot_connectivity_matrix(CIJ, n, plot_figure=None):
+    """
+    Plots a scatter matrix
+    """
+
+    plot = plt.figure(plot_figure).add_subplot(1, 1, 1)
+    x, y = np.where(CIJ == 1)
+    plot.axis([0, n, 0, n])
+    plot.scatter(x, y, vmin=0, vmax=n)
+
+    return plt
 
 
 def plot_membrane_potentials(population_vs, duration, plot_figure=None):
