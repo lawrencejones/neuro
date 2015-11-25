@@ -1,5 +1,4 @@
 import numpy as np
-from Plotters import plot_show, plot_membrane_potentials, plot_firings
 from NeuronNetwork import add_dirac_pulse
 
 
@@ -28,7 +27,4 @@ def simulate(net, duration, base_current=0, bg_lam=0, bg_scale=0):
     for layer_index, layer in net.layers.items():
         add_dirac_pulse(VS[layer_index], layer.firings)
 
-    plot_membrane_potentials(VS, duration, 1)
-    plot_firings(net, duration, 2)
-
-    plot_show()
+    return VS, net
