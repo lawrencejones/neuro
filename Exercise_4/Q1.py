@@ -52,8 +52,8 @@ np.fill_diagonal(inhibitory_layer.S[1], 0)
 
 membrane_potentials, net = simulate(net, duration, bg_lam=0.01, bg_scale=15)
 
-plot_firings([net.layers[0]], duration, 2)
-# plot_module_mean_firing_rate(net.layers[0], no_of_modules, resolution=[20, 50])
+plot_module_mean_firing_rate(net.layers[0], no_of_modules, resolution=[20, 50])
+plot_firings(net.layers[0], duration, title="p=" + str(rewiring_p))
 
 plot_show()
 
