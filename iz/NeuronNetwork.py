@@ -32,7 +32,7 @@ class NeuronNetwork(object):
 
         return net
 
-    def __init__(self, neuron_layers, d_max=5):
+    def __init__(self, neuron_layers, d_max=25):
         """
         Initialises the neuron network with given layers.
 
@@ -51,6 +51,28 @@ class NeuronNetwork(object):
 
         for layer_index in xrange(len(self.layers)):
             self.tick_layer(layer_index, t)
+
+    def tick_layer(self, layer_index, t):
+        """
+        Advances a specific layer by one tick in the simulation.
+
+        layer_index -- the index of the layer to tick
+        t -- the current sim time, for marking fired neurons
+        """
+
+        layer = self.layers[layer_index]
+
+        for input_layer_index, S in layer.S.iteritems():
+            input_layer = self.layers[input_layer_index]
+
+            delay = layer.delay[input_layer_index]
+            scaling_factor = layer.factor[input_layer_index]
+
+            for (firing_time, neuron_index) in input_layer.firings_after(t - self.d_max):
+                idx = delay[:, neuron_index] == (t - firing_time)
+                layer.I[idx] += scaling_factor * S[idx, neuron_index]
+
+        layer.tick(self.dt, t)
 
     def connect_layers(self, layers, scaling_factor=None, delay=5, S=None):
         """
@@ -76,32 +98,14 @@ class NeuronNetwork(object):
         to_layer.factor[from_layer_index] = \
             np.sqrt(to_layer.N) if scaling_factor is None else scaling_factor
 
+        # If delay is supplied as a single uniform integer, then arrayify it
+        if type(delay) is int:
+            delay = delay * np.ones([to_layer.N, from_layer.N], dtype=int)
+
         # The conductive delay between neurons in from->to
-        to_layer.delay[from_layer_index] = delay * np.ones([to_layer.N, from_layer.N], dtype=int)
+        to_layer.delay[from_layer_index] = delay
 
         return self
-
-    def tick_layer(self, layer_index, t):
-        """
-        Advances a specific layer by one tick in the simulation.
-
-        layer_index -- the index of the layer to tick
-        t -- the current sim time, for marking fired neurons
-        """
-
-        layer = self.layers[layer_index]
-
-        for input_layer_index, S in layer.S.iteritems():
-            input_layer = self.layers[input_layer_index]
-
-            delay = layer.delay[input_layer_index]
-            scaling_factor = layer.factor[input_layer_index]
-
-            for (firing_time, neuron_index) in input_layer.firings_after(t - self.d_max):
-                idx = delay[:, neuron_index] == (t - firing_time)
-                layer.I[idx] += scaling_factor * S[idx, neuron_index]
-
-        layer.tick(self.dt, t)
 
     def _identify_layer(self, layer_item):
         """

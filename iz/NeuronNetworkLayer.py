@@ -10,7 +10,6 @@ class NeuronNetworkLayer(object):
     def __init__(self, n):
         self.N = n
         self.I = np.zeros(n)
-        self.V = np.zeros(n)
 
         # S[n][i,j] is the strength of connection from neuron j in layer n to neuron i in this layer
         self.S = {}
@@ -20,7 +19,7 @@ class NeuronNetworkLayer(object):
         self.factor = {}
 
         self.firings = np.empty((0, 2))  # empty stack of tuples
-        self.V = -65 * np.ones(n)  # default resting voltage
+        self.V = -65 * np.random.random_sample(n)  # random starting voltages
 
     def tick(self, dt, t):
         """
