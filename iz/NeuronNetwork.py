@@ -69,41 +69,30 @@ class NeuronNetwork(object):
             scaling_factor = layer.factor[input_layer_index]
 
             for (firing_time, neuron_index) in input_layer.firings_after(t - self.d_max):
-                idx = delay[:, neuron_index] == (t - firing_time)
+                idx = np.where(delay[:, neuron_index] == (t - firing_time))[0]
                 layer.I[idx] += scaling_factor * S[idx, neuron_index]
 
         layer.tick(self.dt, t)
 
-    def connect_layers(self, layers, scaling_factor=None, delay=5, S=None):
+    def connect_layers(self, layers, scaling_factor=None, delay=None, S=None):
         """
         Connects the configured layers with the following parameters...
 
-        layers -- an array of layer_indexes in self.layers
-        scaling_factor -- multiplier for current from spiking neurons to the destination neurons
+        layers -- [target_idx, input_idx]
+        scaling_factor -- scaling for input voltage
         delay -- conduction delay, ms after a neuron fires from layer and is picked up in to layer
-        S -- synaptic connection strength matrix, by default all-to-all
+        S -- synaptic connection strength matrix
         """
 
         if len(layers) != 2:
-            raise StandardError("Expected layers to be an array of [from_index,to_index]")
+            raise StandardError("Expected layers to be an array of [target_index,input_index]")
 
-        from_layer_index, from_layer = self._identify_layer(layers[0])
-        to_layer_index, to_layer = self._identify_layer(layers[1])
+        target_idx, input_idx = layers
+        target_layer = self.layers[target_idx]
 
-        # Create connectivity matrix if not supplied, assume full connectivity
-        to_layer.S[from_layer_index] = \
-            np.ones([to_layer.N, from_layer.N], dtype=int) if S is None else S
-
-        # Create scaling factor for each connection between the layers, default is sqrt(N1)
-        to_layer.factor[from_layer_index] = \
-            np.sqrt(to_layer.N) if scaling_factor is None else scaling_factor
-
-        # If delay is supplied as a single uniform integer, then arrayify it
-        if type(delay) is int:
-            delay = delay * np.ones([to_layer.N, from_layer.N], dtype=int)
-
-        # The conductive delay between neurons in from->to
-        to_layer.delay[from_layer_index] = delay
+        target_layer.S[input_idx] = S
+        target_layer.factor[input_idx] = scaling_factor
+        target_layer.delay[input_idx] = delay
 
         return self
 

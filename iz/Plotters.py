@@ -75,15 +75,15 @@ def plot_membrane_potentials(population_vs, duration, plot_figure=None):
     return plt
 
 
-def plot_firings(neuron_network, duration, plot_figure=None):
+def plot_firings(layers, duration, plot_figure=None):
     """
     Plots the firing events of every neuron in each layer of the network
     """
 
     plt.figure(plot_figure)
 
-    for index, layer in neuron_network.layers.items():
-        plt.subplot(len(neuron_network.layers), 1, 1 + index)
+    for index, layer in enumerate(layers):
+        plt.subplot(len(layers), 1, 1 + index)
         plt.scatter(layer.firings[:, 0], layer.firings[:, 1] + 1, marker='.')
         plt.xlim(0, duration)
         plt.ylabel('Neuron number')

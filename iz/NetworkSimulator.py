@@ -12,9 +12,14 @@ def simulate(net, duration, base_current=0, bg_lam=0, bg_scale=0):
 
     for t in xrange(duration):
 
+        # Progress marker
+        if t % 100 == 0:
+            print(t)
+
         net.layers[0].I = base_current * np.ones(net.layers[0].N)
         if (bg_lam > 0) and (bg_scale != 0):
-            net.layers[0].I += np.random.poisson(lam=bg_lam, size=net.layers[0].N)
+            random_spikes = np.where(np.random.poisson(lam=bg_lam, size=net.layers[0].N) > 0)[0]
+            net.layers[0].I[random_spikes] += bg_scale
 
         for layer_index in range(1, len(net.layers)):
             net.layers[layer_index].I = np.zeros(net.layers[layer_index].N)
