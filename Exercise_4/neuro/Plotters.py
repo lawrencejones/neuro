@@ -2,24 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_show():
-    """
-    Shows the current plot
-    """
-
-    plt.show()
-
-
-def plot_connectivity_matrix(CIJ, title="", plot_figure=None):
+def plot_connectivity_matrix(CIJ):
     """
     Plots a scatter matrix
     """
 
-    plot = plt.figure(plot_figure).add_subplot(1, 1, 1)
-    plt.title(title)
     x, y = np.where(CIJ == 1)
-    plot.axis([0, len(CIJ), 0, len(CIJ[0])])
-    plot.scatter(x, y)
+    plt.axis([0, len(CIJ), 0, len(CIJ[0])])
+    plt.scatter(x, y)
 
     return plt
 
@@ -56,23 +46,6 @@ def plot_module_mean_firing_rate(layer, no_of_modules, resolution=None):
     plt.ylabel('Mean firing rate')
     plt.xlabel('Time (ms) + 0s')
     plt.plot(sampling_ts, firing_rates)
-
-    return plt
-
-
-def plot_membrane_potentials(population_vs, duration, plot_figure=None):
-    """
-    Plots the neuron membrane potentials by population
-    """
-
-    plt.figure(plot_figure)
-
-    for index, V in enumerate(population_vs):
-        plt.subplot(len(population_vs), 1, 1 + index)
-        plt.plot(range(duration), V)
-        plt.title('Population ' + str(index + 1) + ' membrane potentials')
-        plt.ylabel('Voltage (mV)')
-        plt.ylim([-90, 40])
 
     return plt
 
